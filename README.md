@@ -1,2 +1,2 @@
-# nixos-config
-My NixOS configuration files
+# dotfiles
+These are the dotfiles I use on NixOS.
