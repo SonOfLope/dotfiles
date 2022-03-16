@@ -48,6 +48,11 @@
   services.xserver.desktopManager.plasma5.enable = true;
   
 
+  services.kubernetes = {
+    roles = ["master" "node"];
+    masterAddress = "localhost";
+  };
+
   # Configure keymap in X11
   # services.xserver.layout = "us";
   # services.xserver.xkbOptions = "eurosign:e";
@@ -58,6 +63,9 @@
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
+  boot.extraModprobeConfig = ''
+  options snd slots=snd-hda-intel
+  '';
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
@@ -65,28 +73,27 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.sonoflope = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager"]; # Enable ‘sudo’ for the user.
+    extraGroups = ["audio" "wheel" "video" "wireshark" "networkmanager" "vboxusers" "docker" ]; # Enable ‘sudo’ for the user.
   };
+
+  # Sets default shell
+  users.defaultUserShell = pkgs.zsh;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # basic
     vim
     neovim
+
+    lsof
     zsh	  
-    firefox
     wget
     curl
-    xclip
-    dmidecode
-    pciutils usbutils
-    wirelesstools
-    networkmanager  
-    steam
-];
+  ];
+
 
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-  nixpkgs.config.allowUnfree = true; # proprietary drivers
   boot.kernelModules = [ "wl" ];  # set of kernels modules loaded in second stage of boot process 
   boot.initrd.kernelModules = [ "kvm-intel" "wl" ]; # list of modules always loaded by the initrd
    
@@ -97,13 +104,22 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-  programs.steam.enable = true;
-
-
+  #programs.java.enable = true;
+  
+  # Enable virtualbox.
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.guest.enable = true; 
+  virtualisation.docker.enable = true;
+  # Enable the Oracle Extension Pack.
+  #virtualisation.virtualbox.host.enableExtensionPack = true;
+  hardware.bluetooth.enable = true;
   # List services that you want to enable:
+  services = {
+    openssh.enable = true;
 
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+    # bluetooth control
+    blueman.enable = true;
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -111,13 +127,13 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.11"; # Did you read the comment?
+  # Allow unfree packages system-wide. To allow access to unfree packages
+  # in nix-env, also set:
+  #
+  # ~/.config/nixpkgs/config.nix to { allowUnfree = true; }
+  #nixpkgs.config.allowUnfree = true;
 
+  # don't change this
+  system.stateVersion = "21.11";
 }
 
