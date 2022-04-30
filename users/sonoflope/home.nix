@@ -29,7 +29,6 @@
   
   services.caffeine.enable = true;
 
-
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
  
@@ -49,8 +48,8 @@
     docker-compose
     plasma5Packages.kmail 
     plasma5Packages.kmail-account-wizard
+    anydesk
     plasma5Packages.kmailtransport
-    polybarFull
     keepassxc
     thefuck
     cmatrix
@@ -77,8 +76,13 @@
     vlc
     xorg.xhost
     jetbrains.idea-community
+    polybarFull
+    noisetorch
+    freerdp
+    qalculate-gtk
   ];
 
+  
   # dev environnement
   programs.go.enable = true;
   programs.java.enable = true;
@@ -86,6 +90,7 @@
   # k8s setup
   services.lorri.enable = true;
   programs.direnv.enable = true;
+
 
   programs.bat = {
     enable = true;
@@ -413,6 +418,16 @@
         };
       }
       {
+        name = "zsh-nix-shell";
+        file = "nix-shell.plugin.zsh";
+        src = pkgs.fetchFromGitHub {
+          owner = "chisui";
+          repo = "zsh-nix-shell";
+          rev = "v0.4.0";
+          sha256 = "037wz9fqmx0ngcwl9az55fgkipb745rymznxnssr3rx9irb6apzg";
+        };
+      }
+      {
         name = "enhancd";
         file = "init.sh";
         src = pkgs.fetchFromGitHub {
@@ -480,7 +495,7 @@
       remember_window_size =  false;
       initial_window_width = "940";
       initial_window_height = "520";
-      window_border_width = "";
+      window_border_width = "0.1";
       draw_minimal_borders = true;
       window_padding_width = "2";
       hide_window_decorations = true;
