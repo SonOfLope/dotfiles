@@ -120,12 +120,12 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # basic
-    vim
-    neovim
-    lsof
-    zsh	  
-    wget
     curl
+    lsof
+    neovim
+    vim
+    wget
+    zsh	  
   ];
    
   # Some programs need SUID wrappers, can be configured further or are
