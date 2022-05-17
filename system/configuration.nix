@@ -10,17 +10,26 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       # Window manager
-      ./wm/xmonad.nix
+      #./wm/gnome.nix
     ];
 
-  services.xserver.desktopManager.gnome.enable = true;
+    services.xserver = {
+      enable = true;
+      desktopManager.gnome.enable = true;
+      displayManager.gdm.enable = true;
+    };
+
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true; 
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-  boot.kernelModules = [ "wl" ];  # set of kernels modules loaded in second stage of boot process 
-  boot.initrd.kernelModules = [ "kvm-intel" "wl" ]; # list of modules always loaded by the initrd
+  boot = {
+    loader = { 
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true; 
+    };   
+   extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+   kernelModules = [ "wl" ]; # set of kernels modules loaded in second stage of boot process
+   initrd.kernelModules = [ "kvm-intel" "wl"]; # list of modules always loaded by the initrd
+  };
 
   networking = {
     # Defines hostname
@@ -105,21 +114,15 @@
     package = pkgs.pulseaudioFull;
   };
 
-  # Scanner backend
-  hardware.sane = {
-    enable = true;
-    extraBackends = [ pkgs.epkowa pkgs.sane-airscan ];
-  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.sonoflope = {
     isNormalUser = true;
     extraGroups = ["audio" "wheel" "video" "wireshark" "networkmanager" "vboxusers" "docker" ]; # wheel for 'sudo'.
-    shell = pkgs.zsh;
   };
 
   # Sets default shell
-  #users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = pkgs.zsh;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -150,7 +153,6 @@
       allowSFTP = true;
     };
 
-
     # Enable CUPS to print documents.
     printing = {
       enable = true;
@@ -160,25 +162,7 @@
     sshd.enable = true;
   };
   
-  
   nixpkgs.config.allowUnfree = true;
-
-  nix = {
-
-    # Automate garbage collection
-    gc = {
-      automatic = true;
-      dates     = "weekly";
-      options   = "--delete-older-than 7d";
-    };
-
-    package = pkgs.nixFlakes;
-    
-
-    extraOptions = "experimental-features = nix-command flakes";
-
-  };
-
 
   # don't change this
   system.stateVersion = "21.11";

@@ -13,7 +13,6 @@
     };
 
     xserver = {
-      enable = true;
       layout = "us";
 
       libinput = {
