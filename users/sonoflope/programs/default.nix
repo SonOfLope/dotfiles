@@ -1,0 +1,11 @@
+[
+  ./rofi
+  ./autorandr
+  ./git
+  ./xmonad
+  ./dconf
+  ./spotify
+  ./megasync
+  ./kitty
+  ./browsers
+]

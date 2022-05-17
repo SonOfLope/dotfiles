@@ -1,6 +1,97 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, stdenv, ... }:
 
+let 
+
+  defaultPkgs = with pkgs; [  
+    anydesk
+    asciinema
+    brave
+    cachix
+    caffeine-ng
+    cmatrix
+    dbeaver
+    dconf2nix
+    discord
+    dmenu
+    dmidecode
+    docker-compose
+    dotnet-runtime
+    drawio
+    fd
+    freerdp
+    gimp
+    gnumake
+    gnupg
+    google-cloud-sdk
+    gradle
+    jetbrains.idea-community
+    keepassxc
+    killall
+    libreoffice
+    maven
+    ncdu
+    neofetch
+    ngrok-2
+    noisetorch
+    okular
+    openconnect
+    pciutils usbutils
+    pinentry_qt
+    plantuml
+    playerctl
+    qalculate-gtk
+    rclone
+    sshfs
+    terraform
+    thefuck
+    unzip
+    vlc
+    vmware-horizon-client
+    wirelesstools
+    wireshark
+    xclip
+    xorg.xhost
+  ];
+
+  gitPkgs = with pkgs.gitAndTools; [
+    diff-so-fancy # git diff with colors
+    git-crypt     # git files encryption
+    hub           # github command-line client
+    tig           # diff and commit view
+  ];
+
+  gnomePkgs = with pkgs.gnome3; [
+    eog            # image viewer
+    evince         # pdf reader
+    gnome-calendar # calendar
+    nautilus       # file manager
+  ];
+
+  polybarPkgs = with pkgs; [
+    font-awesome          # awesome fonts
+    material-design-icons # fonts with glyphs
+  ];
+
+  xmonadPkgs = with pkgs; [
+    networkmanager_dmenu   # networkmanager on dmenu
+    networkmanagerapplet   # networkmanager applet
+    nitrogen               # wallpaper manager
+    xcape                  # keymaps modifier
+    xorg.xkbcomp           # keymaps modifier
+    xorg.xmodmap           # keymaps modifier
+    xorg.xrandr            # display manager (X Resize and Rotate protocol)
+  ];
+
+in 
 {
+  
+  # Let Home Manager install and manage itself.
+  programs.home-manager.enable = true;
+
+  nixpkgs.overlays = [ (import ./overlays/beauty-line)];
+
+  imports = (import ./programs) ++ (import ./services) ++ [(import ./themes)];
+
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = "sonoflope";
@@ -15,117 +106,76 @@
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home.stateVersion = "21.11";
- 
-  programs.gpg = {
-    enable = true;
-  };
 
-  services.gpg-agent = {
-    enable = true;
-    pinentryFlavor = "qt";
-    enableSshSupport = true;
-  };
+  xdg.enable = true;
 
-  
-  services.caffeine.enable = true;
-
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
- 
   nixpkgs.config.allowUnfree = true;
   
-  home.packages = with pkgs; [
-    brave
-    git-crypt
-    gnupg
-    neofetch
-    pinentry_qt
-    rclone
-    okular
-    obs-studio
-    sshfs
-    caffeine-ng
-    docker-compose
-    plasma5Packages.kmail 
-    plasma5Packages.kmail-account-wizard
-    anydesk
-    plasma5Packages.kmailtransport
-    keepassxc
-    thefuck
-    cmatrix
-    gimp
-    unzip
-    dbeaver
-    terraform
-    google-cloud-sdk
-    xclip
-    dmidecode
-    pciutils usbutils
-    wirelesstools
-    networkmanager
-    discord
-    dotnet-runtime
-    vmware-horizon-client
-    openconnect
-    libreoffice
-    wireshark
-    gnumake
-    maven
-    gradle
-    plantuml
-    vlc
-    xorg.xhost
-    jetbrains.idea-community
-    polybarFull
-    noisetorch
-    freerdp
-    qalculate-gtk
-  ];
+  systemd.user.startServices = "sd-switch";
 
-  
-  # dev environnement
-  programs.go.enable = true;
-  programs.java.enable = true;
+  news.display = "silent";
 
-  # k8s setup
-  services.lorri.enable = true;
-  programs.direnv.enable = true;
+  services = {
 
+    caffeine.enable = true;
 
-  programs.bat = {
-    enable = true;
-    config = {
-      theme = "GitHub";
-      italic-text = "always";
-    };
+    # k8s setup
+    lorri.enable = true;
+
+    flameshot.enable = true;
   };
 
-  programs.git = {
-    enable = true;
-    package = pkgs.gitAndTools.gitFull;
+  home = {
+    packages = defaultPkgs ++ polybarPkgs ++ xmonadPkgs ++ gitPkgs ++ gnomePkgs;
 
-    userName = "SonOfLope";
-    userEmail = "jonathanlopez@hotmail.ca";
+    sessionVariables = {
+      DISPLAY = ":0";
+      EDITOR = "vim";
+      TERMINAL="kitty";
+    };
+  };
+  
+  # dev environnement
+  programs = {
+    go.enable = true;
+    java.enable = true;
     
-    delta = {
+    direnv = {
       enable = true;
-      options = {
-        navigate = true;
-        line-numbers = true;
-        syntax-theme = "GitHub";
+      nix-direnv.enable = true;
+    };
+
+    bat = {
+      enable = true;
+      config = {
+        theme = "GitHub";
+        italic-text = "always";
+      };
+    };
+    
+    gpg.enable = true;
+
+    htop = {
+      enable = true;
+      settings = {
+        sort_direction = true;
+        sort_key = "PERCENT_CPU";
       };
     };
 
-    aliases = {
-      co = "checkout";
-      br = "branch";
-      ci = "commit";
-      st = "status";
-      lo = "log --pretty=format:\"%C(yellow)%h%Creset %s%n%C(magenta)%C(bold)%an%Creset %ar\" --graph";
-      van = "log --pretty=format:'%C(yellow)%h%Creset %ad %C(magenta)%C(bold)%cn%Creset %s %C(auto)%d%C(reset)' --graph --date=format:%Y/%m/%d_%H%M";
-      vn = "log --pretty=format:'%C(yellow)%h%Creset %ad %s %C(auto)%d%C(reset)' --graph --date=format:%Y/%m/%d_%H%M";
-      v = "log --graph --oneline --decorate";
-      vo = "log --graph --decorate";
+    jq.enable = true;
+
+    obs-studio = {
+      enable = true;
+      plugins = [];
+    };
+
+    ssh.enable = true;
+
+    zoxide = {
+      enable = true;
+      enableFishIntegration = true;
+      options = [];
     };
   };
 
@@ -439,68 +489,4 @@
       }
     ];
   };
-  
-  home.sessionVariables = {
-    TERMINAL="kitty";
-  };
-
-  programs.kitty = {
-    enable = true;
-    settings = {
-      font_size = "11.0";
-      font_family      = "FiraCode Nerd Font";
-      bold_font        = "auto";
-      italic_font      = "auto";
-      bold_italic_font = "auto";
-      background = "#282a36";
-      foreground = "#f8f8f2";
-      selection_foreground ="#ffffff";
-      selection_background = "#44475a";
-      cursor = "#f8f8f2";
-      cursor_text_color = "background";
-      color0  = "#21222c";
-      color1  = "#ff5555";
-      color2  = "#50fa7b";
-      color3  = "#f1fa8c";
-      color4  = "#bd93f9";
-      color5  = "#ff79c6";
-      color6  = "#8be9fd";
-      color7  = "#f8f8f2";
-      color8  = "#6272a4";
-      color9  = "#ff6e6e";
-      color10 = "#50fa7b";
-      color11 = "#ffffa5";
-      color12 = "#d6acff";
-      color13 = "#ff92df";
-      color14 = "#a4ffff";
-      color15 = "#ffffff";
-      # Tab bar colors
-      active_tab_foreground = "#282a36";
-      active_tab_background = "#f8f8f2";
-      inactive_tab_foreground = "#282a36";
-      inactive_tab_background = "#6272a4";
-      mark1_foreground = "#282a36";
-      mark1_background = "#ff5555";
-      cursor_beam_thickness = "1.5";
-      cursor_underline_thickness = "2.0";
-      cursor_blink_interval = "-1";
-      scrollback_lines = "2000";
-      mouse_hide_wait = "2.0";
-      detect_urls = true;
-      copy_on_select = false;
-      pointer_shape_when_grabbed = "arrow";
-      default_pointer_shape = "beam";
-      pointer_shape_when_dragging = "beam";
-      enable_audio_bell = false;
-      remember_window_size =  false;
-      initial_window_width = "940";
-      initial_window_height = "520";
-      window_border_width = "0.1";
-      draw_minimal_borders = true;
-      window_padding_width = "2";
-      hide_window_decorations = true;
-      background_opacity = "0.90";
-      dim_opacity = "0.80";
-    };
-  };  
 }
