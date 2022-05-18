@@ -11,7 +11,6 @@
       ./hardware-configuration.nix
       # Window manager
       #./wm/gnome.nix
-      <home-manager/nixos>
     ];
 
     
@@ -161,7 +160,6 @@
     sshd.enable = true;
   };
   
-  nixpkgs.config.allowUnfree = true;
 
   # don't change this
   system.stateVersion = "21.11";
