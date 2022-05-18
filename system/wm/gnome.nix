@@ -2,22 +2,33 @@
 
 {
 
+  programs.gnupg.agent.pinentryFlavor = "gnome3";
+
   # Enable the X11 windowing system.
   services = {
-    # Gnome3 config
+    
+
+    # Gnome config
     dbus.packages = [ pkgs.dconf ];
-    udev.packages = [ pkgs.gnome3.gnome-settings-daemon ];
+    udev.packages = [ pkgs.gnome.gnome-settings-daemon ];
 
     # GUI interface
     xserver = {
+      enable = true;
       layout = "us";
 
       # Enable touchpad support.
-      libinput.enable = true;
+      libinput = {
+        enable = true;
+        touchpad.disableWhileTyping = true;
+      };
 
-      # Enable the Gnome3 desktop manager
-      displayManager.gdm.enable    = true;
-      displayManager.gdm.wayland   = false; # screen-sharing is broken
+      # Enable the Gnome desktop manager
+      displayManager.gdm = {
+        enable    = true;
+        wayland   = false; # screen-sharing is broken
+      };
+      desktopManager.gnome.enable = true;
     };
   };
 }

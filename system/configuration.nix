@@ -4,22 +4,25 @@
 
 { config, lib, pkgs, inputs, ... }:
 
+let
+  customFonts = pkgs.nerdfonts.override {
+    fonts = [
+      "JetBrainsMono"
+      "Iosevka"
+    ];
+  };
+
+  myfonts = pkgs.callPackage fonts/default.nix { inherit pkgs; };
+
+in 
 {
   imports =
     [ 
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       # Window manager
-      #./wm/gnome.nix
+      ./wm/gnome.nix
     ];
-
-    
-    services.xserver = {
-      enable = true;
-      desktopManager.gnome.enable = true;
-      displayManager.gdm.enable = true;
-    };
-
 
   # Use the systemd-boot EFI boot loader.
   boot = {
@@ -43,7 +46,7 @@
     useDHCP = false;
     #interfaces.eno1.useDHCP = true;
     #interfaces.enp2s0.useDHCP = true;
-    #interfaces.wlp3s0.useDHCP = true;
+    interfaces.wlp3s0.useDHCP = true;
     #firewall.allowedTCPPorts = [ 3389 ];
   };
 
@@ -116,11 +119,9 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.sonoflope = {
     isNormalUser = true;
-    extraGroups = ["audio" "wheel" "video" "wireshark" "networkmanager" "vboxusers" "docker" ]; # wheel for 'sudo'.
+    extraGroups  = ["audio" "wheel" "video" "wireshark" "networkmanager" "vboxusers" "docker" ]; # wheel for 'sudo'.
+    shell        = pkgs.zsh; 
   };
-
-  # Sets default shell
-  users.defaultUserShell = pkgs.zsh;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -160,6 +161,15 @@
     sshd.enable = true;
   };
   
+  # Making fonts accessible to applications.
+  fonts.fonts = with pkgs; [
+    customFonts
+    font-awesome
+    myfonts.flags-world-color
+    myfonts.icomoon-feather
+  ];
+
+
 
   # don't change this
   system.stateVersion = "21.11";

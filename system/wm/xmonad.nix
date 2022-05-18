@@ -13,12 +13,20 @@
     };
 
     xserver = {
+      enable = true;
+
       layout = "us";
 
       libinput = {
         enable = true;
         touchpad.disableWhileTyping = true;
       };
+
+      serverLayoutSection = ''
+        Option "StandbyTime" "0"
+        Option "SuspendTime" "0"
+        Option "OffTime" "0"
+      '';
 
       displayManager.defaultSession = "none+xmonad";
 
@@ -27,7 +35,7 @@
         enableContribAndExtras = true;
       };
 
-      xkbOptions = "caps:ctrl_modifier";
+      xkbOptions = "ctrl:nocaps";
     };
   };
 
