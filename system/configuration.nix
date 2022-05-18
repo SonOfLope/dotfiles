@@ -11,8 +11,10 @@
       ./hardware-configuration.nix
       # Window manager
       #./wm/gnome.nix
+      <home-manager/nixos>
     ];
 
+    
     services.xserver = {
       enable = true;
       desktopManager.gnome.enable = true;
@@ -26,9 +28,6 @@
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true; 
     };   
-   extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-   kernelModules = [ "wl" ]; # set of kernels modules loaded in second stage of boot process
-   initrd.kernelModules = [ "kvm-intel" "wl"]; # list of modules always loaded by the initrd
   };
 
   networking = {
@@ -124,20 +123,6 @@
   # Sets default shell
   users.defaultUserShell = pkgs.zsh;
 
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    # basic
-    curl
-    lsof
-    neovim
-    vim
-    wget
-    zsh	  
-  ];
-  
-  
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

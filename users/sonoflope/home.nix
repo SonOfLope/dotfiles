@@ -3,17 +3,12 @@
 let 
 
   defaultPkgs = with pkgs; [  
-    anydesk
-    asciinema
     brave
-    cachix
     caffeine-ng
     cmatrix
     dbeaver
-    dconf2nix
     discord
     dmenu
-    dmidecode
     docker-compose
     dotnet-runtime
     drawio
@@ -60,27 +55,27 @@ let
     tig           # diff and commit view
   ];
 
-  gnomePkgs = with pkgs.gnome3; [
+  gnomePkgs = with pkgs.gnome; [
     eog            # image viewer
     evince         # pdf reader
     gnome-calendar # calendar
     nautilus       # file manager
   ];
 
-  polybarPkgs = with pkgs; [
-    font-awesome          # awesome fonts
-    material-design-icons # fonts with glyphs
-  ];
+  #polybarPkgs = with pkgs; [
+  #  font-awesome          # awesome fonts
+  #  material-design-icons # fonts with glyphs
+  #];
 
-  xmonadPkgs = with pkgs; [
-    networkmanager_dmenu   # networkmanager on dmenu
-    networkmanagerapplet   # networkmanager applet
-    nitrogen               # wallpaper manager
-    xcape                  # keymaps modifier
-    xorg.xkbcomp           # keymaps modifier
-    xorg.xmodmap           # keymaps modifier
-    xorg.xrandr            # display manager (X Resize and Rotate protocol)
-  ];
+  #xmonadPkgs = with pkgs; [
+  #  networkmanager_dmenu   # networkmanager on dmenu
+  #  networkmanagerapplet   # networkmanager applet
+  #  nitrogen               # wallpaper manager
+  #  xcape                  # keymaps modifier
+  #  xorg.xkbcomp           # keymaps modifier
+  #  xorg.xmodmap           # keymaps modifier
+  #  xorg.xrandr            # display manager (X Resize and Rotate protocol)
+  #];
 
 in 
 {
@@ -111,7 +106,6 @@ in
 
   nixpkgs.config.allowUnfree = true;
   
-  systemd.user.startServices = "sd-switch";
 
   news.display = "silent";
 
@@ -121,12 +115,17 @@ in
 
     # k8s setup
     lorri.enable = true;
-
     flameshot.enable = true;
+
+    gpg-agent = {
+      enable = true;
+      pinentryFlavor = "qt";
+      enableSshSupport = true;
+    };
   };
 
   home = {
-    packages = defaultPkgs ++ polybarPkgs ++ xmonadPkgs ++ gitPkgs ++ gnomePkgs;
+    packages = defaultPkgs ++ gitPkgs ++ gnomePkgs; # ++ xmonadPkgs ++ polybarPkgs
 
     sessionVariables = {
       DISPLAY = ":0";
@@ -135,6 +134,8 @@ in
     };
   };
   
+
+
   # dev environnement
   programs = {
     go.enable = true;
@@ -172,11 +173,6 @@ in
 
     ssh.enable = true;
 
-    zoxide = {
-      enable = true;
-      enableFishIntegration = true;
-      options = [];
-    };
   };
 
   programs.vim = {
