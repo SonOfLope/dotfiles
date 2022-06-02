@@ -4,9 +4,13 @@ let
 
   defaultPkgs = with pkgs; [  
     brave
+    nmap
+    dirb
+    perl
     caffeine-ng
     cmatrix
     dbeaver
+    firefox
     discord
     dmenu
     docker-compose
@@ -18,7 +22,9 @@ let
     gnumake
     gnupg
     google-cloud-sdk
+    file
     gradle
+    ghidra-bin
     jetbrains.idea-community
     keepassxc
     killall
@@ -31,19 +37,22 @@ let
     okular
     openconnect
     pciutils usbutils
+    python3
+    python39Packages.pip
     pinentry_qt
     plantuml
     playerctl
     qalculate-gtk
     rclone
     sshfs
+    sqlmap
     terraform
     thefuck
     unzip
     vlc
     vmware-horizon-client
     wirelesstools
-    wireshark
+    wine
     xclip
     xorg.xhost
   ];
@@ -140,7 +149,6 @@ in
   programs = {
     go.enable = true;
     java.enable = true;
-    
     direnv = {
       enable = true;
       nix-direnv.enable = true;
@@ -172,8 +180,8 @@ in
     };
 
     ssh.enable = true;
-
   };
+
 
   programs.vim = {
     enable = true;
@@ -416,26 +424,6 @@ in
     '';
   };
 
-  programs.vscode = {
-       enable = true;
-       package = pkgs.vscodium;
-       extensions = with pkgs.vscode-extensions; [
-         dracula-theme.theme-dracula
-         vscodevim.vim
-         golang.go
-         ms-kubernetes-tools.vscode-kubernetes-tools
-         github.vscode-pull-request-github
-         file-icons.file-icons
-         ms-python.python
-         ms-vsliveshare.vsliveshare
-         james-yu.latex-workshop
-         jnoortheen.nix-ide 
-         redhat.vscode-yaml
-         tomoki1207.pdf
-         donjayamanne.githistory	 
-	 eamodio.gitlens 
-       ];
-  };
 
   programs.zsh = {
     enable = true;
